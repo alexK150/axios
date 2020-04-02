@@ -1,6 +1,11 @@
 const todoUrl = 'https://jsonplaceholder.typicode.com/todos';
 const postsUrl = 'https://jsonplaceholder.typicode.com/posts';
 
+const axiosGHInstance = axios.create({
+    baseURL: 'https://api.github.com/users/',
+    headers: {'content-type': 'application/json'}
+});
+
 // GET REQUEST
 function getTodos() {
     axios.get(`${todoUrl}?_limit=5`)
@@ -35,11 +40,30 @@ function removeTodo() {
 
 // SIMULTANEOUS DATA
 function getData() {
+    /**
+     * 1
+     * */
     axios.all([
-        axios.get(`${todoUrl}?_limit=5`),
-        axios.get(`${postsUrl}?_limit=5`)
-    ]).then(axios.spread((todos, posts) => showOutput(todos)))
-        .catch(err => console.error(err))
+        axiosGHInstance.get(`mapbox`),
+        axiosGHInstance.get(`phantomjs`)
+    ]).then(responseArr => {
+        console.log(`Date created: ${responseArr[0].data.created_at}`);
+        console.log(`Date created: ${responseArr[1].data.created_at}`)
+    });
+
+
+    /**
+     * 2
+     * */
+    // axios.all([
+    //     axios.get(`${todoUrl}?_limit=5`),
+    //     axios.get(`${postsUrl}?_limit=5`)
+    // ]).then(axios.spread((todos, posts) => {
+    //         console.log(todos);
+    //         console.log(posts);
+    //     }
+    // ))
+    //     .catch(err => console.error(err))
 }
 
 // CUSTOM HEADERS
@@ -70,7 +94,7 @@ function errorHandling() {
     axios.get('https://jsonplaceholder.typicode.com/todoss')
         .then(res => showOutput(res))
         .catch(err => {
-            if (err.response){
+            if (err.response) {
                 console.log(err.response.data);
                 console.log(err.response.status);
                 console.log(err.response.headers)
