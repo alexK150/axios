@@ -1,31 +1,63 @@
+const todoUrl = 'https://jsonplaceholder.typicode.com/todos';
+const postsUrl = 'https://jsonplaceholder.typicode.com/posts';
+
 // GET REQUEST
 function getTodos() {
-    console.log("GET Request");
+    axios.get(`${todoUrl}?_limit=5`)
+        .then(res => showOutput(res))
+        .catch(err => console.error(err))
 }
 
 // POST REQUEST
 function addTodo() {
-    console.log('POST Request');
+    axios.post(`${todoUrl}`, {
+        title: 'Hello World',
+        completed: true
+    }).then(res => showOutput(res))
+        .catch(err => console.error(err))
 }
 
 // PUT/PATCH REQUEST
 function updateTodo() {
-    console.log('PUT/PATCH Request');
+    axios.patch(`${todoUrl}/1`, {
+        title: "Some text",
+        completed: true
+    }).then(res => showOutput(res))
+        .catch(err => console.error(err))
 }
 
 // DELETE REQUEST
 function removeTodo() {
-    console.log('DELETE Request');
+    axios.delete(`${todoUrl}/1`)
+        .then(res => showOutput(res))
+        .catch(err => console.error(err))
 }
 
 // SIMULTANEOUS DATA
 function getData() {
-    console.log('Simultaneous Request');
+    axios.all([
+        axios.get(`${todoUrl}?_limit=5`),
+        axios.get(`${postsUrl}?_limit=5`)
+    ]).then(axios.spread((todos, posts) => showOutput(todos)))
+        .catch(err => console.error(err))
 }
 
 // CUSTOM HEADERS
 function customHeaders() {
-    console.log('Custom Headers');
+    const config = {
+        headers: {
+            'content-type': 'application/json',
+            Authorization: 'token'
+        }
+    };
+
+    axios.post(`${todoUrl}`,
+        {
+            title: 'Hello',
+            completed: true
+        }, config)
+        .then(res => showOutput(res))
+        .catch(err => console.error(err))
 }
 
 // TRANSFORMING REQUESTS & RESPONSES
@@ -35,7 +67,15 @@ function transformResponse() {
 
 // ERROR HANDLING
 function errorHandling() {
-    console.log('Error Handling');
+    axios.get('https://jsonplaceholder.typicode.com/todoss')
+        .then(res => showOutput(res))
+        .catch(err => {
+            if (err.response){
+                console.log(err.response.data);
+                console.log(err.response.status);
+                console.log(err.response.headers)
+            }
+        })
 }
 
 // CANCEL TOKEN
@@ -44,6 +84,13 @@ function cancelToken() {
 }
 
 // INTERCEPTING REQUESTS & RESPONSES
+axios.interceptors.request.use(
+    config => {
+        console.log(`${config.method.toUpperCase()} sent to ${config.url} at ${new Date().toLocaleDateString()}`);
+        return config;
+    }, error => {
+        return Promise.reject(error)
+    });
 
 // AXIOS INSTANCES
 
